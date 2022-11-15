@@ -1,4 +1,4 @@
-# my_note
+# Resume
 
 ## Project setup
 ```
