@@ -1,35 +1,58 @@
-const { defineConfig } = require('@vue/cli-service')
+const path = require('path')
+const fs = require('fs')
+
+// Generate pages object
+const pages = {}
+
+function getEntryFile (entryPath) {
+  let files = fs.readdirSync(entryPath)
+  return files
+}
+
+const chromeName = getEntryFile(path.resolve(`src/entry`))
+
+function getFileExtension (filename) {
+  return /[.]/.exec(filename) ? /[^.]+$/.exec(filename)[0] : undefined
+}
+chromeName.forEach((name) => {
+  const fileExtension = getFileExtension(name)
+  const fileName = name.replace('.' + fileExtension, '')
+  pages[fileName] = {
+    entry: `src/entry/${name}`,
+    template: 'public/index.html',
+    filename: `${fileName}.html`
+  }
+})
 
 const isDevMode = process.env.NODE_ENV === 'development'
-module.exports = defineConfig({
-  transpileDependencies: true,
-  pages: {
-    popup: {
-      entry: 'src/entry/popup.ts',
-      template: 'public/index.html',
-      filename: 'popup.html'
-    },
-    content: {
-      entry: 'src/entry/content.ts',
-    },
-    background: {
-      entry: 'src/entry/background.ts',
-    }
-  },
+
+module.exports = {
+  pages,
   filenameHashing: false,
+  chainWebpack: (config) => {
+    config.plugin('copy').use(require('copy-webpack-plugin'), [
+      {
+        patterns: [
+          {
+            from: path.resolve(`src/manifest.${process.env.NODE_ENV}.json`),
+            to: `${path.resolve('dist')}/manifest.json`
+          },
+          {
+            from: path.resolve(`public/`),
+            to: `${path.resolve('dist')}/`
+          }
+        ]
+      }
+    ])
+  },
   configureWebpack: {
-    output: { // 配置以直接输出在dist目录，而不是dist/js/
+    output: {
       filename: `[name].js`,
       chunkFilename: `[name].js`
     },
     devtool: isDevMode ? 'inline-source-map' : false
   },
-  chainWebpack: config => {
-    config.plugins.delete('html-content')
-    config.plugins.delete('preload-content')
-    config.plugins.delete('prefetch-content')
-    config.plugins.delete('html-background')
-    config.plugins.delete('preload-background')
-    config.plugins.delete('prefetch-background')
+  css: {
+    extract: false // Make sure the css is the same
   }
-})
+}

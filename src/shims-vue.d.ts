@@ -5,6 +5,7 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
 declare module 'dom-inspector' {
   export type ElementInfo = {
     top: string;
