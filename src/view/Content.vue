@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div id="resume-card" class="card">
     <div class="info-item">
       <span>姓名：</span>
       <input id="testid" class="testclass">
@@ -10,6 +10,15 @@
 
 <script lang="ts">
 import DomInspector from 'dom-inspector';
+import {
+    provideFASTDesignSystem,
+    fastCard
+} from "@microsoft/fast-components";
+
+provideFASTDesignSystem()
+    .register(
+        fastCard()
+    );
 export default {
   name: 'ContentScript',
   setup() {
