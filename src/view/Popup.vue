@@ -10,19 +10,7 @@ export default {
   name: 'PopUp',
   setup() {
     function switchDisplayContent() {
-      const contentCard = document.getElementById('resume-extension-app');
-      if (contentCard === null) {
-        console.log("未找到content");
-        return;
-      }
-      const bg = chrome.extension.getBackgroundPage();
-
-      // 交换flex和none状态
-      const displayStyle = contentCard.style.display;
-      contentCard.style.display = displayStyle === "flex" ? "none" : "flex";
-
-      console.log("switched display style");
-      bg.sendSwitchDisplay();
+      console.log("switched display style");    
     }
     return {
       switchDisplayContent
